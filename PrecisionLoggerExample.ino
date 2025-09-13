@@ -4,7 +4,7 @@ This Arduino sketch is meant to work with Anabit's Precision Logger product whic
 channels. It also includes features like bipolar measurements, built-in current sources (for resistance 
 measurements), programmable gain amp, built-in temperature sensor, and more
 
-Product link:
+Product link: https://anabit.co/products/precision-logger
  
 This example sketch demonstrates how to make a precision voltage measurement. This sketch uses the awesome 
 library that Molorius put together which can be found on Github using the link below. There are more than 
