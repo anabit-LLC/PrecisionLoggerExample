@@ -29,8 +29,9 @@ Licensed under the Apache License, Version 2.0.
 ********************************************************************************************************/
 
 #include <ADS126X.h>
+#include <SPI.h>
 
-//ADC settings
+//ADC settingsEXT_2048_VREF
 #define ADC1_BITS (float)2147483647.0 //this is for 31 bits with the 32nd bit being signed
 #define ADC2_BITS (float)8388608.0 //this is for 31 bits with the 32nd bit being signed
 #define VREF_2048 (float)2.048 //optional Ext reference voltage
@@ -49,12 +50,12 @@ float convTime = 0; //holds time (in msec) it takes to complete measurement conv
 //adjust this to set measurement pins, PGA, filter type, sample rate, etc
 //please note not all sample rates can be used with all the filter settings. See datasheet table 9-13 for more information
 struct PrecisionLoggerSettings{ 
-    uint8_t posMeasPin = ADS126X_AIN9; //sets positive measurement channel / pin 
-    uint8_t negMeasPin = ADS126X_AIN8; //sets negative measurement channel / pin, for single ended measurements tie this pin to ground
+    uint8_t posMeasPin = ADS126X_AIN8; //sets positive measurement channel / pin 
+    uint8_t negMeasPin = ADS126X_AIN7; //sets negative measurement channel / pin, for single ended measurements tie this pin to ground
     uint8_t sampleRateSetting = ADS126X_RATE_2_5;    // Sample rate in samples per second
-    uint8_t filterType = ADS126X_SINC2; //See library file ADS126X_definitions.h for constnat to set filter type
-    uint8_t progGainAmp = PGA_BYPASSED; //determines amp gain and allows you to bypass amp (default)
-    uint8_t vRef = INT_2_5_VREF; //set voltage reference to internal
+    uint8_t filterType = ADS126X_SINC1; //See library file ADS126X_definitions.h for constnat to set filter type
+    uint8_t progGainAmp = ADS126X_GAIN_1; //determines amp gain and allows you to bypass amp (default)
+    uint8_t vRef = INT_2_5_VREF; //set voltage reference to external
     bool choppingEnabled = true;  // Chopping Mode helps improve measurement accuracy but at the cost of more measurement time
     bool iDACRotation = false; //only applicable when using current sensor (for resistance measurements), increases IDAC accuracy but doubles measurement time
 } PrecLoggerConfig;
@@ -76,7 +77,6 @@ void loop() {
   //long bits2 = adc.readADC2(pos_pin,neg_pin); // read the voltage
   //float voltage = getADCtoVoltage(bits2,ADC2_BITS,VREF_INT,1); //get voltage from ADC reading
   //Serial.print("Measured voltage: "); Serial.println(voltage,4); // send voltage through serial
-  //adc.readADC2(uint8_t pos_pin,uint8_t neg_pin);
 }
 
 //This function starts ADC1 (stops it first), delays for conversion time, 
@@ -161,6 +161,7 @@ void makeLoggerMeasurement(uint8_t posMeasChan, uint8_t negMeasChan) {
   int32_t aDCReading; //holds the ADC code
   float valMeas; //holds the calculated voltage value
   aDCReading = adc.readADC1(posMeasChan,negMeasChan); // read the voltage
+  Serial.print("ADC measured code: "); Serial.println(aDCReading); //print ADC code
   valMeas = getADCtoVoltage(aDCReading,ADC1_BITS,PrecLoggerConfig.vRef); //get voltage from ADC reading
   Serial.print("Measured voltage: "); Serial.println(valMeas,6); // send voltage through serial
 }
